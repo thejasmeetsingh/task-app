@@ -60,7 +60,7 @@ async function createUserModel() {
     })
 }
 
-createUserModel()
+// createUserModel()
 
 
 async function createTaskModel() {
@@ -68,18 +68,21 @@ async function createTaskModel() {
 
     const TaskSchema = new mongoose.Schema({
         description: {
-            type: String
+            type: String,
+            required: true,
+            trim: true
         },
         completed: {
-            type: Boolean
+            type: Boolean,
+            default: false
         }
     })
 
     const Task = mongoose.model("Task", TaskSchema)
 
     const task = new Task({
-        description: "Lorem Ipsum",
-        completed: true
+        description: " Lorem Ipsum",
+        // completed: true
     })
     
     await task.save().then((res) => {
@@ -89,4 +92,4 @@ async function createTaskModel() {
     })
 }
 
-// createTaskModel()
+createTaskModel()
