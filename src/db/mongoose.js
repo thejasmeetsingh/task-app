@@ -1,10 +1,21 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
+
 mongoose.set("strictQuery", false);
 
 async function createUserModel() {
     await mongoose.connect("mongodb://127.0.0.1:27017/task-app", { useNewUrlParser: true })
 
     const UserSchema = new mongoose.Schema({
+        email: {
+            type: String,
+            required: true,
+            validate(value) {
+                if (!validator.isEmail(value)) {
+                    throw new Error("Please enter a valid email address")
+                }
+            }
+        },
         name: {
             type: String,
             required: true
@@ -16,12 +27,13 @@ async function createUserModel() {
                     throw new Error("Age must be greater than 0")
                 }
             }
-        }
+        },
     })
 
     const User = mongoose.model("User", UserSchema)
 
     const user = new User({
+        email: "jasmeet@random.com",
         name: "Jasmeet",
         age: 24
     })
