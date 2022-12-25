@@ -18,6 +18,17 @@ async function createUserModel() {
                 }
             }
         },
+        password: {
+            type: String,
+            required: true,
+            trim: true,
+            minLength: 7,
+            validate(value) {
+                if (value.toLowerCase().includes("password")) {
+                    throw new Error("Password Should not contain the word 'Password'")
+                }
+            }
+        },
         name: {
             type: String,
             required: true,
@@ -39,7 +50,7 @@ async function createUserModel() {
     const user = new User({
         email: "JASMEET@random.com",
         name: " Jasmeet ",
-        // age: 24
+        password: "random123"
     })
     
     await user.save().then((res) => {
