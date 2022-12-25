@@ -10,6 +10,8 @@ async function createUserModel() {
         email: {
             type: String,
             required: true,
+            trim: true,
+            lowercase: true,
             validate(value) {
                 if (!validator.isEmail(value)) {
                     throw new Error("Please enter a valid email address")
@@ -18,10 +20,12 @@ async function createUserModel() {
         },
         name: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
         age: {
             type: Number,
+            default: 0,
             validate(value) {
                 if (value < 0) {
                     throw new Error("Age must be greater than 0")
@@ -33,9 +37,9 @@ async function createUserModel() {
     const User = mongoose.model("User", UserSchema)
 
     const user = new User({
-        email: "jasmeet@random.com",
-        name: "Jasmeet",
-        age: 24
+        email: "JASMEET@random.com",
+        name: " Jasmeet ",
+        // age: 24
     })
     
     await user.save().then((res) => {
