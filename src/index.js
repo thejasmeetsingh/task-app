@@ -1,7 +1,8 @@
 require("./db/mongoose");
 const express = require("express");
 const User = require("./models/user")
-const Task = require("./models/task")
+const Task = require("./models/task");
+const e = require("express");
 
 
 const app = express();
@@ -51,6 +52,22 @@ app.get("/user/:id/", async (req, res) => {
 
 })
 
+
+app.patch("/user/:id/", async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        if (!user) {
+            return res.status(404).send()
+        }
+        
+        return res.status(200).send(user)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
+
+
 app.post("/task/", async (req, res) => {
     const task = new Task(req.body)
 
@@ -89,6 +106,21 @@ app.get("/task/:id/", async (req, res) => {
         res.status(500).send(error)
     }
 
+})
+
+
+app.patch("/task/:id/", async (req, res) => {
+    try {
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        if (!task) {
+            return res.status(404).send()
+        }
+        
+        return res.status(200).send(task)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
 })
 
 
