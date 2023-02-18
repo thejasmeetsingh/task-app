@@ -1,5 +1,6 @@
 const express = require("express")
 const User = require("../models/user")
+const authMiddleware = require("../middleware/auth")
 
 const router = new express.Router()
 
@@ -17,18 +18,11 @@ router.post("/user/", async (req, res) => {
 
 })
 
-router.get("/user/", async (req, res) => {
-
-    try {
-        const users = await User.find({})
-        res.status(200).send(users)
-    } catch (error) {
-        res.status(500).send(error)
-    }
-
+router.get("/user/me/", authMiddleware, async (req, res) => {
+    res.send(req.user)
 })
 
-router.get("/user/:id/", async (req, res) => {
+router.get("/user/:id/", authMiddleware, async (req, res) => {
     const _id = req.params.id
 
     try {
@@ -45,34 +39,34 @@ router.get("/user/:id/", async (req, res) => {
 
 })
 
-router.patch("/user/:id/", async (req, res) => {
+router.patch("/user/:id/", authMiddleware, async (req, res) => {
     try {
+
+        if (req.user._id.toString() !== req.params.id) {
+            return res.status(400).send()
+        }
         
         const updates = Object.keys(req.body)
-        const user = await User.findById(req.params.id)
 
-        if (!user) {
-            return res.status(404).send()
-        }
-
-        updates.forEach((update) => user[update] = req.body[update])
-        await user.save()
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
         
-        return res.status(200).send(user)
+        return res.status(200).send(req.user)
     } catch (error) {
         return res.status(500).send(error)
     }
 })
 
-router.delete("/user/:id/", async (req, res) => {
+router.delete("/user/:id/", authMiddleware, async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
 
-        if (!user) {
-            return res.status(404).send()
+        if (req.user._id.toString() !== req.params.id) {
+            return res.status(400).send()
         }
-        
-        return res.status(200).send(user)
+
+        req.user.delete()
+
+        return res.status(200).send("Deleted Successfully!")
     } catch (error) {
         return res.status(500).send(error)
     }
