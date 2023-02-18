@@ -7,7 +7,8 @@ const router = new express.Router()
 router.post("/login/", async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
-        return res.send(user)
+        const token = await user.generateAuthToken()
+        return res.send({ user, token })
     } catch (error) {
         return res.status(400).send()
     }
