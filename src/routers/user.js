@@ -37,7 +37,7 @@ router.patch("/user/", authMiddleware, async (req, res) => {
 
 router.delete("/user/", authMiddleware, async (req, res) => {
     try {
-        req.user.remove()
+        await req.user.remove()
         return res.status(200).send("Deleted Successfully!")
     } catch (error) {
         return res.status(500).send(error)

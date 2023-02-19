@@ -30,8 +30,6 @@ router.get("/task/", authMiddleware, async (req, res) => {
 })
 
 router.get("/task/:id/", authMiddleware, async (req, res) => {
-    const _id = req.params.id
-
     try {
         const task = await Task.findOne({ _id: req.params.id, user: req.user._id })
 
@@ -68,13 +66,12 @@ router.patch("/task/:id/", authMiddleware, async (req, res) => {
 
 router.delete("/task/:id/", authMiddleware, async (req, res) => {
     try {
-        const task = await Task.findOne({ _id: req.params.id, user: req.user._id })
+        const task = await Task.findOneAndDelete({ _id: req.params.id, user: req.user._id })
 
         if (!task) {
             return res.status(404).send()
         }
         
-        task.remove()
         return res.status(200).send('Deleted Successfull!')
     } catch (error) {
         return res.status(500).send(error)
