@@ -9,7 +9,7 @@ router.post("/task/", authMiddleware, async (req, res) => {
         ...req.body,
         user: req.user._id
     })
-    
+
     try {
         await task.save()
         res.status(201).send(task)
@@ -19,9 +19,9 @@ router.post("/task/", authMiddleware, async (req, res) => {
 
 })
 
-router.get("/task/", async (req, res) => {
+router.get("/task/", authMiddleware, async (req, res) => {
     try {
-        const tasks = await Task.find({})
+        const tasks = await Task.find({ user: req.user._id })
         res.status(200).send(tasks)
     } catch (error) {
         res.status(500).send(error)
@@ -29,11 +29,11 @@ router.get("/task/", async (req, res) => {
 
 })
 
-router.get("/task/:id/", async (req, res) => {
+router.get("/task/:id/", authMiddleware, async (req, res) => {
     const _id = req.params.id
 
     try {
-        const task = await Task.findById(_id)
+        const task = await Task.findOne({ _id: req.params.id, user: req.user._id })
 
         if (!task) {
             return res.status(404).send()
@@ -47,11 +47,11 @@ router.get("/task/:id/", async (req, res) => {
 
 })
 
-router.patch("/task/:id/", async (req, res) => {
+router.patch("/task/:id/", authMiddleware, async (req, res) => {
     try {
 
         const updates = Object.keys(req.body)
-        const task = await Task.findById(req.params.id)
+        const task = await Task.findOne({ _id: req.params.id, user: req.user._id })
 
         if (!task) {
             return res.status(404).send()
@@ -66,15 +66,16 @@ router.patch("/task/:id/", async (req, res) => {
     }
 })
 
-router.delete("/task/:id/", async (req, res) => {
+router.delete("/task/:id/", authMiddleware, async (req, res) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id)
+        const task = await Task.findOne({ _id: req.params.id, user: req.user._id })
 
         if (!task) {
             return res.status(404).send()
         }
         
-        return res.status(200).send(task)
+        task.remove()
+        return res.status(200).send('Deleted Successfull!')
     } catch (error) {
         return res.status(500).send(error)
     }
