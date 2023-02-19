@@ -18,17 +18,12 @@ router.post("/user/", async (req, res) => {
 
 })
 
-router.get("/user/me/", authMiddleware, async (req, res) => {
+router.get("/user/", authMiddleware, async (req, res) => {
     res.send(req.user)
 })
 
-router.patch("/user/:id/", authMiddleware, async (req, res) => {
-    try {
-
-        if (req.user._id.toString() !== req.params.id) {
-            return res.status(400).send()
-        }
-        
+router.patch("/user/", authMiddleware, async (req, res) => {
+    try {        
         const updates = Object.keys(req.body)
 
         updates.forEach((update) => req.user[update] = req.body[update])
@@ -40,15 +35,9 @@ router.patch("/user/:id/", authMiddleware, async (req, res) => {
     }
 })
 
-router.delete("/user/:id/", authMiddleware, async (req, res) => {
+router.delete("/user/", authMiddleware, async (req, res) => {
     try {
-
-        if (req.user._id.toString() !== req.params.id) {
-            return res.status(400).send()
-        }
-
-        req.user.delete()
-
+        req.user.remove()
         return res.status(200).send("Deleted Successfully!")
     } catch (error) {
         return res.status(500).send(error)
