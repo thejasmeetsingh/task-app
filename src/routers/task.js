@@ -20,8 +20,27 @@ router.post("/task/", authMiddleware, async (req, res) => {
 })
 
 router.get("/task/", authMiddleware, async (req, res) => {
+    const params = {
+        user: req.user._id
+    }
+    const sort = {}
+
+    if (req.query.completed) {
+        params.completed = req.query.completed.toLowerCase() === 'true'
+    }
+
+    if (req.query.sortBy) {
+        const parts = req.query.sortBy.split(':')
+        sort[parts[0]] = parseInt(parts[1])
+    }
+
     try {
-        const tasks = await Task.find({ user: req.user._id })
+        const limit = req.query.limit ? parseInt(req.query.limit) : 2
+        const pageNumber = req.query.page ? parseInt(req.query.page) : 0
+        const offset = pageNumber > 0 ? ( ( pageNumber - 1 ) * limit ) : 0
+
+        const tasks = await Task.find(params).limit(limit).skip(offset).sort(sort)
+        
         res.status(200).send(tasks)
     } catch (error) {
         res.status(500).send(error)
