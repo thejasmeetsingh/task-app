@@ -22,23 +22,6 @@ router.get("/user/me/", authMiddleware, async (req, res) => {
     res.send(req.user)
 })
 
-router.get("/user/:id/", authMiddleware, async (req, res) => {
-    const _id = req.params.id
-
-    try {
-        const user = await User.findById(_id)
-
-        if (!user) {
-            return res.status(404).send()
-        }
-        return res.status(200).send(user)
-        
-    } catch (error) {
-        res.status(500).send(error)
-    }
-
-})
-
 router.patch("/user/:id/", authMiddleware, async (req, res) => {
     try {
 
