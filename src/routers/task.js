@@ -71,7 +71,7 @@ router.delete("/task/:id/", authMiddleware, async (req, res) => {
         if (!task) {
             return res.status(404).send()
         }
-        
+
         return res.status(200).send('Deleted Successfull!')
     } catch (error) {
         return res.status(500).send(error)
